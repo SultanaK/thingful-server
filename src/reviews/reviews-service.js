@@ -1,4 +1,5 @@
 const xss = require('xss')
+const Treeize = require('treeize')
 
 const ReviewsService = {
   getById(db, id) {

@@ -62,13 +62,14 @@ const ThingsService = {
   },
 
   serializeThing(thing) {
+    
     const thingTree = new Treeize()
-
+    console.log(thingTree);
     // Some light hackiness to allow for the fact that `treeize`
     // only accepts arrays of objects, and we want to use a single
     // object.
     const thingData = thingTree.grow([ thing ]).getData()[0]
-
+    console.log(thingData)
     return {
       id: thingData.id,
       title: xss(thingData.title),
