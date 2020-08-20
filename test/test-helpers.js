@@ -269,6 +269,7 @@ function seedThingsTables(db, users, things, reviews=[]) {
       `SELECT setval('thingful_things_id_seq', ?)`,
       [things[things.length - 1].id], 
     )
+    await trx.into('thingful_reviews').insert(reviews)
 
   })
     /* .into('thingful_users')

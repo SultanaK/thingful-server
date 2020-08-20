@@ -84,7 +84,7 @@ describe.only('Things Endpoints', function () {
   })
 
 
-  describe.only(`GET /api/things`, () => {
+  describe(`GET /api/things`, () => {
     context(`Given no things`, () => {
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
