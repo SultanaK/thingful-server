@@ -2,7 +2,7 @@ const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe('Things Endpoints', function () {
+describe.only('Things Endpoints', function () {
   let db
 
   const {
@@ -84,7 +84,7 @@ describe('Things Endpoints', function () {
   })
 
 
-  describe(`GET /api/things`, () => {
+  describe.only(`GET /api/things`, () => {
     context(`Given no things`, () => {
       it(`responds with 200 and an empty list`, () => {
         return supertest(app)
@@ -147,7 +147,8 @@ describe('Things Endpoints', function () {
   describe(`GET /api/things/:thing_id`, () => {
     context(`Given no things`, () => {
       beforeEach(() =>
-        db.into('thingful_users').insert(testUsers)
+        //db.into('thingful_users').insert(testUsers)
+        helpers.seedUsers(db, testUsers)
       )
 
       it(`responds with 404`, () => {
@@ -215,7 +216,8 @@ describe('Things Endpoints', function () {
   describe(`GET /api/things/:thing_id/reviews`, () => {
     context(`Given no things`, () => {
       beforeEach(() =>
-        db.into('thingful_users').insert(testUsers)
+        //db.into('thingful_users').insert(testUsers)
+        helpers.seedUsers(db,testUsers)
       )
 
 
