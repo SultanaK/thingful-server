@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
 
 function makeUsersArray() {
   return [
@@ -135,7 +137,7 @@ function makeReviewsArray(users, things) {
   ];
 }
 
-function makeExpectedThing(users, thing, reviews=[]) {
+function makeExpectedThing(users, thing, reviews = []) {
   const user = users
     .find(user => user.id === thing.user_id)
 
@@ -164,7 +166,7 @@ function makeExpectedThing(users, thing, reviews=[]) {
 }
 
 function calculateAverageReviewRating(reviews) {
-  if(!reviews.length) return 0
+  if (!reviews.length) return 0
 
   const sum = reviews
     .map(review => review.rating)
@@ -224,8 +226,8 @@ function makeThingsFixtures() {
 
 function cleanTables(db) {
   return db.transaction(trx =>
-  trx.raw(
-    `TRUNCATE
+    trx.raw(
+      `TRUNCATE
       thingful_things,
       thingful_users,
       thingful_reviews
@@ -245,61 +247,64 @@ function cleanTables(db) {
   )
 }
 function seedUsers(db, users) {
-    const preppedUsers = users.map(user => ({
+  const preppedUsers = users.map(user => ({
     ...user,
-        password: bcrypt.hashSync(user.password, 1)
-    }))
+    password: bcrypt.hashSync(user.password, 1)
+  }))
   return db.into('thingful_users').insert(preppedUsers)
-      .then(() =>
-          // update the auto sequence to stay in sync
-          db.raw(
-              `SELECT setval('thingful_users_id_seq', ?)`,
-      [users[users.length - 1].id],
-            )
-        )
-  }
+    .then(() =>
+      // update the auto sequence to stay in sync
+      db.raw(
+        `SELECT setval('thingful_users_id_seq', ?)`,
+        [users[users.length - 1].id],
+      )
+    )
+}
 
 
-function seedThingsTables(db, users, things, reviews=[]) {
+function seedThingsTables(db, users, things, reviews = []) {
   return db.transaction(async trx => {
     await seedUsers(trx, users)
     await trx.into('thingful_things')
       .insert(things)
-    await trx.raw( 
+    await trx.raw(
       `SELECT setval('thingful_things_id_seq', ?)`,
-      [things[things.length - 1].id], 
+      [things[things.length - 1].id],
     )
     await trx.into('thingful_reviews').insert(reviews)
 
   })
-    /* .into('thingful_users')
-    .insert(users)
-    .then(() =>
-      db
-        .into('thingful_things')
-        .insert(things)
-    )
-    .then(() =>
-      reviews.length && db.into('thingful_reviews').insert(reviews)
-    ) */
+  /* .into('thingful_users')
+  .insert(users)
+  .then(() =>
+    db
+      .into('thingful_things')
+      .insert(things)
+  )
+  .then(() =>
+    reviews.length && db.into('thingful_reviews').insert(reviews)
+  ) */
 }
 
 function seedMaliciousThing(db, user, thing) {
   /* return db
     .into('thingful_users')
     .insert([user]) */
-  return seedUsers(db,[user])
-    
+  return seedUsers(db, [user])
+
     .then(() =>
       db
         .into('thingful_things')
         .insert([thing])
     )
 }
-function makeAuthHeader(user) {
-     const token = Buffer.from(`${user.user_name}:${user.password}`).toString('base64')
-       return `Basic ${token}`
-       }
+function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+  const token = jwt.sign({ user_id: user.id }, secret, {
+    subject: user.user_name,
+    algorithm: 'HS256',
+  })
+  return `Bearer ${token}`
+}
 
 
 module.exports = {
@@ -315,6 +320,6 @@ module.exports = {
   seedThingsTables,
   seedMaliciousThing,
   seedUsers,
-  
-  
+
+
 }

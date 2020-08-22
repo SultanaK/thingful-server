@@ -3,7 +3,7 @@ const path = require('path')
 const ReviewsService = require('./reviews-service')
 const reviewsRouter = express.Router()
 const jsonBodyParser = express.json()
-const { requireAuth } = require('../middleware/basic-auth')
+const { requireAuth } = require('../middleware/jwt-auth')
 
 reviewsRouter
   .route('/')
