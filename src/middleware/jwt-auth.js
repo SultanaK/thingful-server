@@ -35,8 +35,6 @@ function requireAuth(req, res, next) {
         res.status(401).json({ error: 'Unauthorized request' })
     }
 
-    /* return res.status(401).json({ error: 'Missing bearer token' })
-   next()  */
 }
 
 module.exports = {
